@@ -1,0 +1,64 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: checkout-bff
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:globo}
+    username: ${DB_USER:globo}
+    password: ${DB_PASSWORD:globo}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  cache:
+    type: ${CACHE_TYPE:redis}
+    redis:
+      time-to-live: ${CACHE_TTL:10m}
+      key-prefix: "checkout-bff:"
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:5}
+      timeout: 500ms
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        # mensagem com erro vai para a DLQ em vez de voltar para a fila em loop
+        default-requeue-rejected: false
+
+# Serviços externos. Por padrão apontam para os mocks que sobem junto com a aplicação (/mock).
+clients:
+  products:
+    base-url: ${PRODUCTS_URL:http://localhost:${server.port}/mock}
+    connect-timeout: 1s
+    read-timeout: 2s
+  payment-methods:
+    base-url: ${PAYMENT_METHODS_URL:http://localhost:${server.port}/mock}
+    connect-timeout: 1s
+    read-timeout: 2s
+
+checkout:
+  # rabbit = publica os eventos de pagamento no RabbitMQ; log = só registra no log (sem broker).
+  events:
+    broker: ${EVENTS_BROKER:log}
+  # Desligar quando os serviços reais de produtos e meios de pagamento existirem.
+  mock-services:
+    enabled: ${MOCK_SERVICES_ENABLED:true}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  health:
+    rabbit:
+      enabled: ${EVENTS_HEALTH:false}

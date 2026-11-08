@@ -1,0 +1,67 @@
+### Pré-checkout: plano Premium
+# @name pre
+POST http://localhost:8080/operations/pre-checkout
+Content-Type: application/json
+
+{ "products": [{ "slug": "premium" }] }
+
+### Checkout aprovado (cartão de crédito)
+POST http://localhost:8080/operations/checkout
+Content-Type: application/json
+
+{
+  "cartId": "{{pre.response.body.cartId}}",
+  "paymentMethod": {
+    "name": "Cartão de Crédito",
+    "card": { "holderName": "Ana Souza", "number": "4111111111114242", "expiry": "12/28", "cvv": "123" }
+  }
+}
+
+### Pagamento duplicado (o mesmo carrinho de novo) → 409 CART_ALREADY_PAID
+POST http://localhost:8080/operations/checkout
+Content-Type: application/json
+
+{ "cartId": "{{pre.response.body.cartId}}", "paymentMethod": { "name": "Pix" } }
+
+### Novo carrinho para testar a recusa
+# @name pre2
+POST http://localhost:8080/operations/pre-checkout
+Content-Type: application/json
+
+{ "products": [{ "slug": "familia" }] }
+
+### Cartão terminado em 0002 → 422 PAYMENT_DECLINED
+POST http://localhost:8080/operations/checkout
+Content-Type: application/json
+
+{
+  "cartId": "{{pre2.response.body.cartId}}",
+  "paymentMethod": {
+    "name": "Cartão de Débito",
+    "card": { "holderName": "Ana Souza", "number": "4000000000000002", "expiry": "12/28", "cvv": "123" }
+  }
+}
+
+### Depois da recusa, Pix no mesmo carrinho → aprovado com pixCode
+POST http://localhost:8080/operations/checkout
+Content-Type: application/json
+
+{ "cartId": "{{pre2.response.body.cartId}}", "paymentMethod": { "name": "Pix" } }
+
+### Produto inexistente → 422 PRODUCT_NOT_FOUND
+POST http://localhost:8080/operations/pre-checkout
+Content-Type: application/json
+
+{ "products": [{ "slug": "ultra" }] }
+
+### Carrinho inexistente → 404 CART_NOT_FOUND
+POST http://localhost:8080/operations/checkout
+Content-Type: application/json
+
+{ "cartId": "00000000-0000-0000-0000-000000000000", "paymentMethod": { "name": "Pix" } }
+
+### Meio não oferecido → 422 PAYMENT_METHOD_NOT_ALLOWED
+POST http://localhost:8080/operations/checkout
+Content-Type: application/json
+
+{ "cartId": "{{pre2.response.body.cartId}}", "paymentMethod": { "name": "Boleto" } }

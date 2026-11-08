@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:checkout;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  cache:
+    type: simple
+
+checkout:
+  events:
+    broker: log
+
+management:
+  health:
+    redis:
+      enabled: false
