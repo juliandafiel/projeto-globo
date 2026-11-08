@@ -11,9 +11,9 @@ import br.com.checkout.bff.gateway.PaymentGatewayI;
 import br.com.checkout.bff.persistence.Cart;
 import br.com.checkout.bff.persistence.CartItem;
 import br.com.checkout.bff.persistence.CartPaymentMethod;
-import br.com.checkout.bff.persistence.CartRepository;
+import br.com.checkout.bff.persistence.CartRepositoryI;
 import br.com.checkout.bff.persistence.Payment;
-import br.com.checkout.bff.persistence.PaymentRepository;
+import br.com.checkout.bff.persistence.PaymentRepositoryI;
 import br.com.checkout.bff.persistence.PaymentStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,14 +41,14 @@ public class CheckoutServiceImpl implements CheckoutServiceI {
 
     private static final Logger log = LoggerFactory.getLogger(CheckoutServiceImpl.class);
 
-    private final CartRepository cartRepository;
-    private final PaymentRepository paymentRepository;
+    private final CartRepositoryI cartRepository;
+    private final PaymentRepositoryI paymentRepository;
     private final PaymentGatewayI paymentGateway;
     private final CardValidator cardValidator;
     private final ApplicationEventPublisher events;
     private final Clock clock;
 
-    public CheckoutServiceImpl(CartRepository cartRepository, PaymentRepository paymentRepository,
+    public CheckoutServiceImpl(CartRepositoryI cartRepository, PaymentRepositoryI paymentRepository,
                            PaymentGatewayI paymentGateway, CardValidator cardValidator,
                            ApplicationEventPublisher events, Clock clock) {
         this.cartRepository = cartRepository;

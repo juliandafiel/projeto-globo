@@ -9,7 +9,7 @@ import br.com.checkout.bff.domain.ErrorCode;
 import br.com.checkout.bff.persistence.Cart;
 import br.com.checkout.bff.persistence.CartItem;
 import br.com.checkout.bff.persistence.CartPaymentMethod;
-import br.com.checkout.bff.persistence.CartRepository;
+import br.com.checkout.bff.persistence.CartRepositoryI;
 import br.com.checkout.bff.persistence.CartStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class PreCheckoutServiceImplTest {
     @Mock
     PaymentMethodClientI paymentMethodClient;
     @Mock
-    CartRepository cartRepository;
+    CartRepositoryI cartRepository;
 
     PreCheckoutServiceImpl service;
 

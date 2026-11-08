@@ -11,10 +11,10 @@ import br.com.checkout.bff.gateway.PaymentGatewayI;
 import br.com.checkout.bff.persistence.Cart;
 import br.com.checkout.bff.persistence.CartItem;
 import br.com.checkout.bff.persistence.CartPaymentMethod;
-import br.com.checkout.bff.persistence.CartRepository;
+import br.com.checkout.bff.persistence.CartRepositoryI;
 import br.com.checkout.bff.persistence.CartStatus;
 import br.com.checkout.bff.persistence.Payment;
-import br.com.checkout.bff.persistence.PaymentRepository;
+import br.com.checkout.bff.persistence.PaymentRepositoryI;
 import br.com.checkout.bff.persistence.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,9 +47,9 @@ class CheckoutServiceImplTest {
     static final CardInput CARD = new CardInput("Ana Souza", "4111111111114242", "12/28", "123");
 
     @Mock
-    CartRepository cartRepository;
+    CartRepositoryI cartRepository;
     @Mock
-    PaymentRepository paymentRepository;
+    PaymentRepositoryI paymentRepository;
     @Mock
     PaymentGatewayI gateway;
     @Mock

@@ -167,8 +167,10 @@ Todas as falhas de negócio saem com **4xx**. As duas últimas linhas não são 
 | `PaymentMethodClientI` | `PaymentMethodClientImpl` | cliente HTTP do serviço de meios de pagamento (com cache) |
 | `PaymentGatewayI` | `PaymentGatewayImpl` | cobrança simulada |
 | `PaymentEventPublisherI` | `RabbitPaymentEventPublisherImpl` / `LoggingPaymentEventPublisherImpl` | publicação do pagamento aprovado |
+| `CartRepositoryI` | `CartRepositoryImpl` | persistência dos carrinhos |
+| `PaymentRepositoryI` | `PaymentRepositoryImpl` | persistência das tentativas de pagamento |
 
-Os repositórios (`CartRepository`, `PaymentRepository`) são interfaces do Spring Data JPA, e a implementação é gerada pelo Spring. Eles mantêm o nome padrão porque, no Spring Data, uma classe `<Repositório>Impl` tem significado próprio (implementação customizada) e seria detectada automaticamente.
+Os services usam só `CartRepositoryI` e `PaymentRepositoryI`. As implementações delegam para as interfaces do Spring Data JPA (`CartJpaRepository`, `PaymentJpaRepository`), que ficam restritas à camada de persistência.
 
 ```
 api/            Controller, DTOs de entrada e saída, catálogo de erros e handler único
@@ -176,7 +178,7 @@ application/    Services (interface + Impl), CardValidator, comandos e resultado
 domain/         ErrorCode, exceções de negócio, PaymentMethodType
 client/         Clientes dos serviços externos (interface + Impl HTTP com cache)
 gateway/        Cobrança (interface + Impl simulada)
-persistence/    Entidades JPA (Cart, CartItem, Payment) e repositórios
+persistence/    Entidades JPA, repositórios (interface + Impl) e interfaces do Spring Data
 events/         Evento de pagamento aprovado → RabbitMQ (ou log) + consumidor
 mock/           Serviços externos simulados, expostos por HTTP em /mock
 config/         RestClient com timeouts, cache, Clock
@@ -186,7 +188,7 @@ config/         RestClient com timeouts, cache, Clock
 Controller ──► Service (I) ──► Client (I) ──────► serviços externos (/mock/products, /mock/payment-methods)
                            │                      (Redis na frente dos dois)
                            ├─► PaymentGateway (I) ─► cobrança simulada
-                           ├─► Repository ─────────► PostgreSQL (carrinho e tentativas)
+                           ├─► Repository (I) ─────► PostgreSQL (carrinho e tentativas)
                            └─► evento após commit ─► PaymentEventPublisher (I) ─► RabbitMQ ─► SubscriptionActivationConsumer
 ```
 

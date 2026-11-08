@@ -9,7 +9,7 @@ import br.com.checkout.bff.domain.ErrorCode;
 import br.com.checkout.bff.persistence.Cart;
 import br.com.checkout.bff.persistence.CartItem;
 import br.com.checkout.bff.persistence.CartPaymentMethod;
-import br.com.checkout.bff.persistence.CartRepository;
+import br.com.checkout.bff.persistence.CartRepositoryI;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,11 +34,11 @@ public class PreCheckoutServiceImpl implements PreCheckoutServiceI {
 
     private final ProductClientI productClient;
     private final PaymentMethodClientI paymentMethodClient;
-    private final CartRepository cartRepository;
+    private final CartRepositoryI cartRepository;
     private final Clock clock;
 
     public PreCheckoutServiceImpl(ProductClientI productClient, PaymentMethodClientI paymentMethodClient,
-                              CartRepository cartRepository, Clock clock) {
+                              CartRepositoryI cartRepository, Clock clock) {
         this.productClient = productClient;
         this.paymentMethodClient = paymentMethodClient;
         this.cartRepository = cartRepository;

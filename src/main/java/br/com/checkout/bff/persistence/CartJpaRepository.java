@@ -9,7 +9,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface CartRepository extends JpaRepository<Cart, UUID> {
+/** Spring Data JPA de carrinhos. Só o CartRepositoryImpl usa diretamente. */
+public interface CartJpaRepository extends JpaRepository<Cart, UUID> {
 
     /**
      * Carrega o carrinho travando a linha até o fim da transação: dois checkouts simultâneos
