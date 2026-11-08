@@ -13,8 +13,8 @@ import java.util.List;
 
 /**
  * Simula os dois serviços externos (produtos e meios de pagamento) dentro do próprio projeto.
- * O BFF NÃO lê estas listas direto: consome por HTTP, pelos clientes {@code HttpProductClient}
- * e {@code HttpPaymentMethodClient}, como faria com os serviços reais.
+ * O BFF NÃO lê estas listas direto: consome por HTTP, pelos clientes {@code ProductClientImpl}
+ * e {@code PaymentMethodClientImpl}, como faria com os serviços reais.
  */
 @RestController
 @RequestMapping("/mock")

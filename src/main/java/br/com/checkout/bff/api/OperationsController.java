@@ -7,8 +7,8 @@ import br.com.checkout.bff.api.dto.PreCheckoutResponse;
 import br.com.checkout.bff.application.CardInput;
 import br.com.checkout.bff.application.CheckoutCommand;
 import br.com.checkout.bff.application.CheckoutResult;
-import br.com.checkout.bff.application.CheckoutService;
-import br.com.checkout.bff.application.PreCheckoutService;
+import br.com.checkout.bff.application.CheckoutServiceI;
+import br.com.checkout.bff.application.PreCheckoutServiceI;
 import br.com.checkout.bff.persistence.Cart;
 import br.com.checkout.bff.persistence.Payment;
 import jakarta.validation.Valid;
@@ -24,10 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/operations")
 public class OperationsController {
 
-    private final PreCheckoutService preCheckoutService;
-    private final CheckoutService checkoutService;
+    private final PreCheckoutServiceI preCheckoutService;
+    private final CheckoutServiceI checkoutService;
 
-    public OperationsController(PreCheckoutService preCheckoutService, CheckoutService checkoutService) {
+    public OperationsController(PreCheckoutServiceI preCheckoutService, CheckoutServiceI checkoutService) {
         this.preCheckoutService = preCheckoutService;
         this.checkoutService = checkoutService;
     }

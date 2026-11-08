@@ -157,12 +157,25 @@ Todas as falhas de negócio saem com **4xx**. As duas últimas linhas não são 
 
 ## Arquitetura
 
+**Convenção de nomes:** interface termina em `I` e implementação em `Impl` (ex.: `CheckoutServiceI` / `CheckoutServiceImpl`). Cada camada depende só da interface da camada de baixo.
+
+| Interface | Implementação | Papel |
+|---|---|---|
+| `PreCheckoutServiceI` | `PreCheckoutServiceImpl` | regra do pré-checkout |
+| `CheckoutServiceI` | `CheckoutServiceImpl` | regra do checkout |
+| `ProductClientI` | `ProductClientImpl` | cliente HTTP do serviço de produtos (com cache) |
+| `PaymentMethodClientI` | `PaymentMethodClientImpl` | cliente HTTP do serviço de meios de pagamento (com cache) |
+| `PaymentGatewayI` | `PaymentGatewayImpl` | cobrança simulada |
+| `PaymentEventPublisherI` | `RabbitPaymentEventPublisherImpl` / `LoggingPaymentEventPublisherImpl` | publicação do pagamento aprovado |
+
+Os repositórios (`CartRepository`, `PaymentRepository`) são interfaces do Spring Data JPA, e a implementação é gerada pelo Spring. Eles mantêm o nome padrão porque, no Spring Data, uma classe `<Repositório>Impl` tem significado próprio (implementação customizada) e seria detectada automaticamente.
+
 ```
 api/            Controller, DTOs de entrada e saída, catálogo de erros e handler único
-application/    Regras: PreCheckoutService, CheckoutService, CardValidator
+application/    Services (interface + Impl), CardValidator, comandos e resultados
 domain/         ErrorCode, exceções de negócio, PaymentMethodType
-client/         Portas para os serviços externos (ProductClient, PaymentMethodClient) + implementações HTTP com cache
-gateway/        Porta de cobrança (PaymentGateway) + SimulatedPaymentGateway
+client/         Clientes dos serviços externos (interface + Impl HTTP com cache)
+gateway/        Cobrança (interface + Impl simulada)
 persistence/    Entidades JPA (Cart, CartItem, Payment) e repositórios
 events/         Evento de pagamento aprovado → RabbitMQ (ou log) + consumidor
 mock/           Serviços externos simulados, expostos por HTTP em /mock
@@ -170,15 +183,14 @@ config/         RestClient com timeouts, cache, Clock
 ```
 
 ```
-Frontend ──► OperationsController ──► PreCheckoutService ──► ProductClient ───────► GET /mock/products
-                                  │                      └─► PaymentMethodClient ─► GET /mock/payment-methods
-                                  │                           (Redis na frente dos dois)
-                                  └─► CheckoutService ──► PaymentGateway (simulado)
-                                                      ├─► PostgreSQL (carrinho e tentativas)
-                                                      └─► evento após commit ──► RabbitMQ ──► SubscriptionActivationConsumer
+Controller ──► Service (I) ──► Client (I) ──────► serviços externos (/mock/products, /mock/payment-methods)
+                           │                      (Redis na frente dos dois)
+                           ├─► PaymentGateway (I) ─► cobrança simulada
+                           ├─► Repository ─────────► PostgreSQL (carrinho e tentativas)
+                           └─► evento após commit ─► PaymentEventPublisher (I) ─► RabbitMQ ─► SubscriptionActivationConsumer
 ```
 
-- **Serviços externos atrás de interfaces.** O BFF só conhece `ProductClient` e `PaymentMethodClient`. As implementações chamam por HTTP os mocks em `/mock/*`, que sobem junto com a aplicação. Para usar serviços reais, basta configurar `PRODUCTS_URL` e `PAYMENT_METHODS_URL` e desligar os mocks com `MOCK_SERVICES_ENABLED=false`. Nada nos endpoints muda.
+- **Serviços externos atrás de interfaces.** O BFF só conhece `ProductClientI` e `PaymentMethodClientI`. As implementações chamam por HTTP os mocks em `/mock/*`, que sobem junto com a aplicação. Para usar serviços reais, basta configurar `PRODUCTS_URL` e `PAYMENT_METHODS_URL` e desligar os mocks com `MOCK_SERVICES_ENABLED=false`. Nada nos endpoints muda.
 - **O carrinho guarda uma cópia do que foi oferecido.** Preços e meios de pagamento são gravados no pré-checkout. O checkout valida o meio contra essa cópia ("um dos devolvidos no pré-checkout daquele carrinho") e cobra o valor que o usuário viu, mesmo que o catálogo mude depois.
 - **Pagamento duplicado.** O checkout carrega o carrinho com `SELECT … FOR UPDATE`. Duas requisições simultâneas do mesmo carrinho ficam em fila, e a segunda já o encontra pago (`409 CART_ALREADY_PAID`). Há ainda `@Version` como segunda proteção.
 - **Recusa não fecha o carrinho.** A tentativa recusada é gravada (`payments.status = DECLINED`) e o carrinho segue aberto para "Tentar novamente" ou "Trocar meio de pagamento".

@@ -8,9 +8,9 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SimulatedPaymentGatewayTest {
+class PaymentGatewayImplTest {
 
-    final SimulatedPaymentGateway gateway = new SimulatedPaymentGateway();
+    final PaymentGatewayImpl gateway = new PaymentGatewayImpl();
     final UUID cartId = UUID.fromString("f1d4c35a-8634-43ed-80e6-4d13c4271dbc");
 
     private ChargeRequest card(PaymentMethodType type, String number) {
@@ -52,7 +52,7 @@ class SimulatedPaymentGatewayTest {
         // CRC confere: recalcular sobre tudo até "6304" dá os 4 últimos caracteres
         String withoutCrc = code.substring(0, code.length() - 4);
         assertThat(withoutCrc).endsWith("6304");
-        assertThat(SimulatedPaymentGateway.pixCode(
+        assertThat(PaymentGatewayImpl.pixCode(
                 new ChargeRequest(cartId, PaymentMethodType.PIX, new BigDecimal("39.90"), "BRL", null))).isEqualTo(code);
     }
 }

@@ -1,9 +1,9 @@
 package br.com.checkout.bff.config;
 
-import br.com.checkout.bff.client.paymentmethod.HttpPaymentMethodClient;
-import br.com.checkout.bff.client.paymentmethod.PaymentMethodClient;
-import br.com.checkout.bff.client.product.HttpProductClient;
-import br.com.checkout.bff.client.product.ProductClient;
+import br.com.checkout.bff.client.paymentmethod.PaymentMethodClientImpl;
+import br.com.checkout.bff.client.paymentmethod.PaymentMethodClientI;
+import br.com.checkout.bff.client.product.ProductClientImpl;
+import br.com.checkout.bff.client.product.ProductClientI;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
@@ -16,13 +16,13 @@ import java.time.Clock;
 public class ClientsConfig {
 
     @Bean
-    ProductClient productClient(RestClient.Builder builder, ClientsProperties props) {
-        return new HttpProductClient(restClient(builder, props.products()));
+    ProductClientI productClient(RestClient.Builder builder, ClientsProperties props) {
+        return new ProductClientImpl(restClient(builder, props.products()));
     }
 
     @Bean
-    PaymentMethodClient paymentMethodClient(RestClient.Builder builder, ClientsProperties props) {
-        return new HttpPaymentMethodClient(restClient(builder, props.paymentMethods()));
+    PaymentMethodClientI paymentMethodClient(RestClient.Builder builder, ClientsProperties props) {
+        return new PaymentMethodClientImpl(restClient(builder, props.paymentMethods()));
     }
 
     @Bean

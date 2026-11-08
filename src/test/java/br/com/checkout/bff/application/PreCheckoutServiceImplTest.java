@@ -2,8 +2,8 @@ package br.com.checkout.bff.application;
 
 import br.com.checkout.bff.TestData;
 import br.com.checkout.bff.client.ExternalServiceException;
-import br.com.checkout.bff.client.paymentmethod.PaymentMethodClient;
-import br.com.checkout.bff.client.product.ProductClient;
+import br.com.checkout.bff.client.paymentmethod.PaymentMethodClientI;
+import br.com.checkout.bff.client.product.ProductClientI;
 import br.com.checkout.bff.domain.BusinessException;
 import br.com.checkout.bff.domain.ErrorCode;
 import br.com.checkout.bff.persistence.Cart;
@@ -30,21 +30,21 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PreCheckoutServiceTest {
+class PreCheckoutServiceImplTest {
 
     @Mock
-    ProductClient productClient;
+    ProductClientI productClient;
     @Mock
-    PaymentMethodClient paymentMethodClient;
+    PaymentMethodClientI paymentMethodClient;
     @Mock
     CartRepository cartRepository;
 
-    PreCheckoutService service;
+    PreCheckoutServiceImpl service;
 
     @BeforeEach
     void setUp() {
         Clock clock = Clock.fixed(Instant.parse("2026-10-14T16:00:00Z"), ZoneOffset.UTC);
-        service = new PreCheckoutService(productClient, paymentMethodClient, cartRepository, clock);
+        service = new PreCheckoutServiceImpl(productClient, paymentMethodClient, cartRepository, clock);
     }
 
     @Test

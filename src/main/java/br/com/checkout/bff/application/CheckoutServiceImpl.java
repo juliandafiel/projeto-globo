@@ -7,7 +7,7 @@ import br.com.checkout.bff.events.PaymentApprovedEvent;
 import br.com.checkout.bff.gateway.CardData;
 import br.com.checkout.bff.gateway.ChargeRequest;
 import br.com.checkout.bff.gateway.ChargeResult;
-import br.com.checkout.bff.gateway.PaymentGateway;
+import br.com.checkout.bff.gateway.PaymentGatewayI;
 import br.com.checkout.bff.persistence.Cart;
 import br.com.checkout.bff.persistence.CartItem;
 import br.com.checkout.bff.persistence.CartPaymentMethod;
@@ -37,19 +37,19 @@ import java.util.UUID;
  * </ol>
  */
 @Service
-public class CheckoutService {
+public class CheckoutServiceImpl implements CheckoutServiceI {
 
-    private static final Logger log = LoggerFactory.getLogger(CheckoutService.class);
+    private static final Logger log = LoggerFactory.getLogger(CheckoutServiceImpl.class);
 
     private final CartRepository cartRepository;
     private final PaymentRepository paymentRepository;
-    private final PaymentGateway paymentGateway;
+    private final PaymentGatewayI paymentGateway;
     private final CardValidator cardValidator;
     private final ApplicationEventPublisher events;
     private final Clock clock;
 
-    public CheckoutService(CartRepository cartRepository, PaymentRepository paymentRepository,
-                           PaymentGateway paymentGateway, CardValidator cardValidator,
+    public CheckoutServiceImpl(CartRepository cartRepository, PaymentRepository paymentRepository,
+                           PaymentGatewayI paymentGateway, CardValidator cardValidator,
                            ApplicationEventPublisher events, Clock clock) {
         this.cartRepository = cartRepository;
         this.paymentRepository = paymentRepository;
@@ -60,6 +60,7 @@ public class CheckoutService {
     }
 
     // A recusa precisa ficar gravada: por isso PaymentDeclinedException não desfaz a transação.
+    @Override
     @Transactional(noRollbackFor = PaymentDeclinedException.class)
     public CheckoutResult checkout(CheckoutCommand command) {
         String cartIdText = command.cartId();

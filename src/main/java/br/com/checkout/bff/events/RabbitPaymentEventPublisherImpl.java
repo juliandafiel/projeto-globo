@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 /** Publica o pagamento aprovado na exchange {@value RabbitEventsConfig#EXCHANGE}. */
 @Component
 @ConditionalOnProperty(name = "checkout.events.broker", havingValue = "rabbit")
-public class RabbitPaymentEventPublisher implements PaymentEventPublisher {
+public class RabbitPaymentEventPublisherImpl implements PaymentEventPublisherI {
 
     private final RabbitTemplate rabbitTemplate;
 
-    public RabbitPaymentEventPublisher(RabbitTemplate rabbitTemplate) {
+    public RabbitPaymentEventPublisherImpl(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 

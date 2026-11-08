@@ -10,13 +10,13 @@ import org.springframework.web.client.RestClientException;
 import java.util.List;
 
 /** Cliente HTTP do serviço de meios de pagamento, com cache. */
-public class HttpPaymentMethodClient implements PaymentMethodClient {
+public class PaymentMethodClientImpl implements PaymentMethodClientI {
 
     private static final ParameterizedTypeReference<List<AvailablePaymentMethod>> LIST = new ParameterizedTypeReference<>() { };
 
     private final RestClient restClient;
 
-    public HttpPaymentMethodClient(RestClient restClient) {
+    public PaymentMethodClientImpl(RestClient restClient) {
         this.restClient = restClient;
     }
 

@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 /** Sem broker (checkout.events.broker=log): só registra o evento. */
 @Component
 @ConditionalOnProperty(name = "checkout.events.broker", havingValue = "log", matchIfMissing = true)
-public class LoggingPaymentEventPublisher implements PaymentEventPublisher {
+public class LoggingPaymentEventPublisherImpl implements PaymentEventPublisherI {
 
-    private static final Logger log = LoggerFactory.getLogger(LoggingPaymentEventPublisher.class);
+    private static final Logger log = LoggerFactory.getLogger(LoggingPaymentEventPublisherImpl.class);
 
     @Override
     public void publish(PaymentApprovedEvent event) {

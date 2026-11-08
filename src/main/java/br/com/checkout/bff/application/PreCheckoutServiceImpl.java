@@ -1,9 +1,9 @@
 package br.com.checkout.bff.application;
 
 import br.com.checkout.bff.client.paymentmethod.AvailablePaymentMethod;
-import br.com.checkout.bff.client.paymentmethod.PaymentMethodClient;
+import br.com.checkout.bff.client.paymentmethod.PaymentMethodClientI;
 import br.com.checkout.bff.client.product.CatalogProduct;
-import br.com.checkout.bff.client.product.ProductClient;
+import br.com.checkout.bff.client.product.ProductClientI;
 import br.com.checkout.bff.domain.BusinessException;
 import br.com.checkout.bff.domain.ErrorCode;
 import br.com.checkout.bff.persistence.Cart;
@@ -30,14 +30,14 @@ import java.util.stream.Collectors;
  * carrinho com a cópia do que foi oferecido.
  */
 @Service
-public class PreCheckoutService {
+public class PreCheckoutServiceImpl implements PreCheckoutServiceI {
 
-    private final ProductClient productClient;
-    private final PaymentMethodClient paymentMethodClient;
+    private final ProductClientI productClient;
+    private final PaymentMethodClientI paymentMethodClient;
     private final CartRepository cartRepository;
     private final Clock clock;
 
-    public PreCheckoutService(ProductClient productClient, PaymentMethodClient paymentMethodClient,
+    public PreCheckoutServiceImpl(ProductClientI productClient, PaymentMethodClientI paymentMethodClient,
                               CartRepository cartRepository, Clock clock) {
         this.productClient = productClient;
         this.paymentMethodClient = paymentMethodClient;
@@ -45,6 +45,7 @@ public class PreCheckoutService {
         this.clock = clock;
     }
 
+    @Override
     @Transactional
     public Cart createCart(List<String> requestedSlugs) {
         // Assinatura não tem quantidade: o mesmo plano repetido conta uma vez só.

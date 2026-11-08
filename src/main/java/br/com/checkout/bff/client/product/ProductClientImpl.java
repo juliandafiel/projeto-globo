@@ -10,13 +10,13 @@ import org.springframework.web.client.RestClientException;
 import java.util.List;
 
 /** Cliente HTTP do serviço de produtos. O catálogo muda pouco, então fica em cache. */
-public class HttpProductClient implements ProductClient {
+public class ProductClientImpl implements ProductClientI {
 
     private static final ParameterizedTypeReference<List<CatalogProduct>> LIST = new ParameterizedTypeReference<>() { };
 
     private final RestClient restClient;
 
-    public HttpProductClient(RestClient restClient) {
+    public ProductClientImpl(RestClient restClient) {
         this.restClient = restClient;
     }
 

@@ -15,9 +15,9 @@ public class PaymentApprovedRelay {
 
     private static final Logger log = LoggerFactory.getLogger(PaymentApprovedRelay.class);
 
-    private final PaymentEventPublisher publisher;
+    private final PaymentEventPublisherI publisher;
 
-    public PaymentApprovedRelay(PaymentEventPublisher publisher) {
+    public PaymentApprovedRelay(PaymentEventPublisherI publisher) {
         this.publisher = publisher;
     }
 

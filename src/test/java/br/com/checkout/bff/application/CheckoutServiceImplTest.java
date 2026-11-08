@@ -7,7 +7,7 @@ import br.com.checkout.bff.domain.PaymentMethodType;
 import br.com.checkout.bff.events.PaymentApprovedEvent;
 import br.com.checkout.bff.gateway.ChargeRequest;
 import br.com.checkout.bff.gateway.ChargeResult;
-import br.com.checkout.bff.gateway.PaymentGateway;
+import br.com.checkout.bff.gateway.PaymentGatewayI;
 import br.com.checkout.bff.persistence.Cart;
 import br.com.checkout.bff.persistence.CartItem;
 import br.com.checkout.bff.persistence.CartPaymentMethod;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CheckoutServiceTest {
+class CheckoutServiceImplTest {
 
     static final Clock CLOCK = Clock.fixed(Instant.parse("2026-10-14T16:00:00.123Z"), ZoneOffset.UTC);
     static final CardInput CARD = new CardInput("Ana Souza", "4111111111114242", "12/28", "123");
@@ -51,16 +51,16 @@ class CheckoutServiceTest {
     @Mock
     PaymentRepository paymentRepository;
     @Mock
-    PaymentGateway gateway;
+    PaymentGatewayI gateway;
     @Mock
     ApplicationEventPublisher events;
 
-    CheckoutService service;
+    CheckoutServiceImpl service;
     Cart cart;
 
     @BeforeEach
     void setUp() {
-        service = new CheckoutService(cartRepository, paymentRepository, gateway, new CardValidator(CLOCK), events, CLOCK);
+        service = new CheckoutServiceImpl(cartRepository, paymentRepository, gateway, new CardValidator(CLOCK), events, CLOCK);
         cart = new Cart(UUID.randomUUID(),
                 List.of(new CartItem(0, "premium", "Plano Premium", "desc", new BigDecimal("39.90"), "BRL")),
                 List.of(new CartPaymentMethod("credit_card", "Cartão de Crédito", PaymentMethodType.CREDIT_CARD),

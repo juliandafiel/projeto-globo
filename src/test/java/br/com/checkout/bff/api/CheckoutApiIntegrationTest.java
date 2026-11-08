@@ -2,8 +2,8 @@ package br.com.checkout.bff.api;
 
 import br.com.checkout.bff.TestData;
 import br.com.checkout.bff.client.ExternalServiceException;
-import br.com.checkout.bff.client.paymentmethod.PaymentMethodClient;
-import br.com.checkout.bff.client.product.ProductClient;
+import br.com.checkout.bff.client.paymentmethod.PaymentMethodClientI;
+import br.com.checkout.bff.client.product.ProductClientI;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -45,10 +45,10 @@ class CheckoutApiIntegrationTest {
     JdbcTemplate jdbc;
 
     @MockitoBean
-    ProductClient productClient;
+    ProductClientI productClient;
 
     @MockitoBean
-    PaymentMethodClient paymentMethodClient;
+    PaymentMethodClientI paymentMethodClient;
 
     MockMvc mvc;
 

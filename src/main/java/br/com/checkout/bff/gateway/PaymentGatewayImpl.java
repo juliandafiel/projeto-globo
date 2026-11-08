@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
  * </ul>
  */
 @Component
-public class SimulatedPaymentGateway implements PaymentGateway {
+public class PaymentGatewayImpl implements PaymentGatewayI {
 
     public static final String DECLINED_SUFFIX = "0002";
     public static final String DECLINE_REASON = "CARD_DECLINED";

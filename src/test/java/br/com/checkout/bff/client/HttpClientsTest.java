@@ -1,9 +1,9 @@
 package br.com.checkout.bff.client;
 
 import br.com.checkout.bff.client.paymentmethod.AvailablePaymentMethod;
-import br.com.checkout.bff.client.paymentmethod.HttpPaymentMethodClient;
+import br.com.checkout.bff.client.paymentmethod.PaymentMethodClientImpl;
 import br.com.checkout.bff.client.product.CatalogProduct;
-import br.com.checkout.bff.client.product.HttpProductClient;
+import br.com.checkout.bff.client.product.ProductClientImpl;
 import br.com.checkout.bff.domain.ErrorCode;
 import br.com.checkout.bff.domain.PaymentMethodType;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class HttpClientsTest {
                 [{"slug":"premium","name":"Plano Premium","description":"Completo","price":39.90,"currency":"BRL"}]
                 """, MediaType.APPLICATION_JSON));
 
-        List<CatalogProduct> products = new HttpProductClient(builder.build()).findAll();
+        List<CatalogProduct> products = new ProductClientImpl(builder.build()).findAll();
 
         assertThat(products).hasSize(1);
         assertThat(products.get(0).slug()).isEqualTo("premium");
@@ -44,7 +44,7 @@ class HttpClientsTest {
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
         server.expect(requestTo("http://produtos/products")).andRespond(withServerError());
 
-        assertThatThrownBy(() -> new HttpProductClient(builder.build()).findAll())
+        assertThatThrownBy(() -> new ProductClientImpl(builder.build()).findAll())
                 .isInstanceOf(ExternalServiceException.class)
                 .extracting(e -> ((ExternalServiceException) e).getErrorCode())
                 .isEqualTo(ErrorCode.SERVICE_UNAVAILABLE);
@@ -59,7 +59,7 @@ class HttpClientsTest {
                  {"code":"credit_card","name":"Cartão de Crédito","type":"CREDIT_CARD"}]
                 """, MediaType.APPLICATION_JSON));
 
-        List<AvailablePaymentMethod> methods = new HttpPaymentMethodClient(builder.build()).findAll();
+        List<AvailablePaymentMethod> methods = new PaymentMethodClientImpl(builder.build()).findAll();
 
         assertThat(methods).extracting(AvailablePaymentMethod::type)
                 .containsExactly(PaymentMethodType.PIX, PaymentMethodType.CREDIT_CARD);
@@ -72,7 +72,7 @@ class HttpClientsTest {
         MockRestServiceServer server = MockRestServiceServer.bindTo(builder).build();
         server.expect(requestTo("http://meios/payment-methods")).andRespond(withServerError());
 
-        assertThatThrownBy(() -> new HttpPaymentMethodClient(builder.build()).findAll())
+        assertThatThrownBy(() -> new PaymentMethodClientImpl(builder.build()).findAll())
                 .isInstanceOf(ExternalServiceException.class);
     }
 }
